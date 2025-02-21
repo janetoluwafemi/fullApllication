@@ -1,20 +1,28 @@
-const User = require('../models/user_model');
-const CardService = require('../services/card_service');
-const BucketService = require('../services/bucket_service');
-const {Error} = require("mongoose");
+import User from '../models/user_model.js';
+import CardService from '../services/card_service.js';
+import BucketService from '../services/bucket_service.js';
+import mongoose from 'mongoose';
+
+const { Error } = mongoose;
 
 class UserService {
     async createUser(userDetails) {
         try {
+            const existingUser = await User.findOne({
+                $or: [{ email: userDetails.email }, { phoneNumber: userDetails.phoneNumber }]
+            });
+            if (existingUser) {
+                return new Error('Email or Phone Number already in use.');
+            }
             const user = new User(userDetails);
             const savedUser = await user.save();
             console.log("New User Created:", user);
-
             return savedUser._id;
         } catch (err) {
             throw new Error(err.message);
         }
     }
+
     async checkIfUserAlreadyExist(id){
         try {
             const user = await User.findById(id)
@@ -31,64 +39,14 @@ class UserService {
                 return new Error('User not found');
             }
             await user.save();
-            return await CardService.addCard(cardData);
+            const cardService = new CardService();
+            return await cardService.addCard(cardData);
         }
         catch (err) {
             throw new Error(err.message);
         }
     }
-    async createFirstTypeOfBucket(userId){
-        try {
-            const user = await User.findById(userId);
-            if (!user) {
-                return new Error('User not found');
-            }
-            await user.save();
-            return await BucketService.createTypeBucket();
-        }
-        catch (err) {
-            throw new Error(err.message);
-        }
-    }
-    async createSecondTypeOfBucket(userId){
-        try {
-            const user = await User.findById(userId);
-            if (!user) {
-                return new Error('User not found');
-            }
-            await user.save();
-            return await BucketService.createAnotherTypeBucket();
-        }
-        catch (err) {
-            throw new Error(err.message);
-        }
-    }
-    async createThirdTypeOfBucket(userId){
-        try {
-            const user = await User.findById(userId);
-            if (!user) {
-                return new Error('User not found');
-            }
-            await user.save();
-            return await BucketService.createAnotherTypeBucketAgain();
-        }
-        catch (err) {
-            throw new Error(err.message);
-        }
-    }
-    async createLastTypeOfBucket(userId){
-        try {
-            const user = await User.findById(userId);
-            if (!user) {
-                return new Error('User not found');
-            }
-            await user.save();
-            return await BucketService.createLastTypeBucket();
-        }
-        catch (err) {
-            throw new Error(err.message);
-        }
-    }
+
     async updateCart(userId, data){
         try {
             const user = await User.findById(userId);
@@ -96,7 +54,8 @@ class UserService {
                 return new Error('User not found');
             }
             await user.save();
-            return await CardService.updateCard(data);
+            const cardService = new CardService();
+            return await cardService.updateCard(data);
         }
         catch (error){
             throw new Error(error.message);
@@ -109,7 +68,35 @@ class UserService {
                 return new Error('User not found');
             }
             await user.save();
-            return await CardService.deleteCard(id);
+            const cardService = new CardService();
+            return await cardService.deleteCard(id);
+        }
+        catch (error){
+            throw new Error(error.message);
+        }
+    }
+    async createBucket(userId, bucketDetails) {
+        try {
+            const user = await User.findById(userId);
+            if (!user) {
+                return new Error('User not found');
+            }
+            await user.save();
+            const bucketService = new BucketService();
+            return await bucketService.createTypeBucket(bucketDetails)
+        } catch (err) {
+            throw new Error(err.message);
+        }
+    }
+    async getAllBuckets(userId){
+        try {
+            const user = await User.findById(userId);
+            if (!user) {
+                return new Error('User not found');
+            }
+            await user.save();
+            const bucketService = new BucketService();
+            return await bucketService.getBuckets()
         }
         catch (error){
             throw new Error(error.message);
@@ -117,4 +104,4 @@ class UserService {
     }
 }
 
-module.exports = new UserService;
+export default UserService;

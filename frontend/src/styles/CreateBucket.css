@@ -1,47 +1,97 @@
-.create-bucket-container {
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f4f4f4;
-    border-radius: 8px;
+.bucket-create-container {
+    width: 500px;
+    max-width: 600px;
+    padding: 100px;
     position: relative;
-    left: 40px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    left: 90px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 }
 
-.create-bucket-container h1 {
+.bucket-create-container:hover {
+    transform: translateY(-10px);
+}
+
+h1 {
     text-align: center;
     font-size: 2rem;
+    font-weight: 600;
+    color: #333;
     margin-bottom: 20px;
 }
 
-.create-bucket-form {
+.bucket-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
-.create-bucket-form label {
-    font-size: 1.1rem;
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.create-bucket-form input, .create-bucket-form select, .create-bucket-form textarea {
-    padding: 10px;
+.form-group label {
     font-size: 1rem;
-    border-radius: 5px;
-    border: 1px solid #ddd;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 5px;
 }
 
-.create-bucket-form button {
-    background-color: #4CAF50;
-    color: white;
+.form-group input, .form-group select {
     padding: 12px;
     font-size: 1rem;
-    border: none;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.create-bucket-form button:hover {
-    background-color: #45a049;
+.form-group input:focus, .form-group select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+button {
+    padding: 12px;
+    font-size: 1.1rem;
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 600;
+}
+
+button:hover {
+    background-color: #e15b52;
+    transform: translateY(-2px);
+}
+
+.error-message {
+    color: red;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .bucket-create-container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    button {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
 }

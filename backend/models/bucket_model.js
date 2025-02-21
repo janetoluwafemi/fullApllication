@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+import mongoose, {Schema} from 'mongoose';
 
 const BucketType = {
     ENTERTAINMENTVIDEOS: 'entertainmentVideos',
@@ -15,9 +14,10 @@ const bucketSchema = new Schema({
         enum: Object.values(BucketType),
         required: true
     },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     id: { type: String, unique: true },
     createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 const Bucket = mongoose.model('Bucket', bucketSchema);
-module.exports = Bucket ;
+export default Bucket ;

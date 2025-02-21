@@ -36,7 +36,8 @@ describe('UserService - createUser', () => {
             accountNumber: '987654321',
             address: 'Some address',
         };
-        userId = await UserService.createUser(userDetails);
+        const userService = new UserService
+        userId = await userService.createUser(userDetails);
         const user = await User.findById(userId);
         console.log(user)
         expect(userId).toBe(userId._id);

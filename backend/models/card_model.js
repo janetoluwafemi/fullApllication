@@ -1,18 +1,4 @@
-// const mongoose = require('mongoose');
-// const { Schema } = mongoose;
-//
-// const cardSchema = new Schema({
-//     id: { type: String, unique: true },
-//     name: { type: String, required: true },
-//     link: { type: String, required: true },
-//     bucketId: { type: String, required: true },
-// }, { timestamps: true });
-//
-// const Card = mongoose.model('Card', cardSchema);
-// module.exports = Card;
-
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+import mongoose, {Schema} from 'mongoose';
 
 const cardSchema = new Schema({
     id: { type: String, unique: true },
@@ -22,4 +8,4 @@ const cardSchema = new Schema({
 }, { timestamps: true });
 
 const Card = mongoose.model('Card', cardSchema);
-module.exports = Card;
+export default Card;

@@ -1,53 +1,90 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import '../styles/CreateBucket.css';
 
-function BucketList() {
-    const [buckets, setBuckets] = useState([]);
+function CreateBucket() {
+    const [name, setName] = useState('');
+    const [userId, setUserId] = useState('');
+    const [type, setType] = useState('entertainmentVideos');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    useEffect(() => {
-        const fetchBuckets = async () => {
-            try {
-                const response = await axios.get('http://localhost:8081/api/buckets');
-                setBuckets(response.data);
-            } catch (error) {
-                console.error('Error fetching buckets:', error);
-            }
-        };
-        useEffect(() => {
-            fetchBuckets().then(data => {
-                setBuckets(data);
+    const bucketTypes = [
+        { value: 'entertainmentVideos', label: 'Entertainment Videos' },
+        { value: 'educationVideos', label: 'Education Videos' },
+        { value: 'liveVideos', label: 'Live Videos' },
+        { value: 'promotionVideos', label: 'Promotional Videos' }
+    ];
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!name) {
+            alert("Please enter a bucket name.");
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        setUserId(sessionStorage.getItem('userId'));
+
+        const newBucket = { name, type , userId};
+
+
+        axios.post('http://localhost:8082/api/buckets', newBucket)
+            .then(response => {
+                console.log('Bucket created:', response.data);
+                alert("Bucket created successfully!");
+            })
+            .catch(error => {
+                console.error('There was an error creating the bucket!', error);
+                setError('Failed to create bucket. Please try again.');
+            })
+            .finally(() => {
+                setLoading(false);
             });
-        }, []);      }, []);
+    };
 
     return (
-        <div>
-            <h1>Bucket List</h1>
-            <div className="bucket-list">
-                {buckets.map(bucket => (
-                    <div key={bucket._id} className="bucket">
-                        <h2>{bucket.name}</h2>
-                        <p>Type: {bucket.type}</p>
-                        <div className="card-list">
-                            <h3>Cards:</h3>
-                            {bucket.cards && bucket.cards.length > 0 ? (
-                                <ul>
-                                    {bucket.cards.map((card, index) => (
-                                        <li key={index}>
-                                            <h4>{card.title}</h4>
-                                            <p>{card.description}</p>
-                                            {card.imageUrl && <img src={card.imageUrl} alt={card.title} />}
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p>No cards added yet.</p>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
+        <div className="bucket-create-container">
+            <h1>Create New Bucket</h1>
+            <form onSubmit={handleSubmit} className="bucket-form">
+                <div className="form-group">
+                    <label htmlFor="name">Bucket Name:</label>
+                    <input
+                        type="text"
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Enter bucket name"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="type">Bucket Type:</label>
+                    <select
+                        id="type"
+                        value={type}
+                        onChange={(e) => setType(e.target.value)}
+                    >
+                        {bucketTypes.map((bucket) => (
+                            <option key={bucket.value} value={bucket.value}>
+                                {bucket.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {error && <div className="error-message">{error}</div>}
+
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Creating...' : 'Create Bucket'}
+                </button>
+            </form>
         </div>
     );
 }
 
-export default BucketList;
+export default CreateBucket;

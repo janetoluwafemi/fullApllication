@@ -1,20 +1,21 @@
-const cardModel = require('../models/card_model');
-const bucketModel = require('../models/bucket_model');
-const {Types} = require("mongoose");
-const mongoose = require('mongoose');  // Import mongoose
+import mongoose from 'mongoose';
+import Card from '../models/card_model.js';
+import Bucket from '../models/bucket_model.js';
+
+const { Types } = mongoose;  // Import mongoose
 
 class CardService {
 
     async addCard(cardData) {
         try {
-            const newBucket = new bucketModel({
+            const newBucket = new Bucket({
                 name: 'Entertainment Bucket',
                 type: 'entertainmentVideos',
                 id: '67b478439b188ad2a4f05c41'
             });
             const savedBucket = await newBucket.save();
             console.log('Bucket created:', savedBucket);
-            const card = new cardModel(cardData);
+            const card = new Card(cardData);
             const savedCard = await card.save();
             console.log('Card created:', savedCard);
             return savedCard._id;
@@ -24,7 +25,7 @@ class CardService {
     }
     async updateCard(data) {
         const cardId = new mongoose.Types.ObjectId(data._id);
-        const card = await cardModel.findById(cardId);
+        const card = await Card.findById(cardId);
         if (!card) {
             return new Error('Card not found');
         }
@@ -36,7 +37,7 @@ class CardService {
         }
         if (data.bucketId) {
             console.log(`Looking for bucket with ID: ${data.bucketId}`);
-            const bucket = await bucketModel.findById(data.bucketId);
+            const bucket = await Bucket.findById(data.bucketId);
             if (!bucket) {
                 console.error(`Bucket with ID: ${data.bucketId} not found`);
                 throw new Error('Bucket not found');
@@ -50,7 +51,7 @@ class CardService {
     }
 
     async deleteCard(id) {
-        const deletedCard = await cardModel.findByIdAndDelete(id);
+        const deletedCard = await Card.findByIdAndDelete(id);
         if (!deletedCard) {
             throw new Error('Card not found');
         }
@@ -58,4 +59,4 @@ class CardService {
     }
 }
 
-module.exports = new CardService();
+export default CardService
