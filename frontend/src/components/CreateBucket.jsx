@@ -29,13 +29,24 @@ function CreateBucket() {
 
         setUserId(sessionStorage.getItem('userId'));
 
+        setUserId(localStorage.getItem('userId'))
         const newBucket = { name, type , userId};
 
+        if (!userId) {
+            setError('User is not logged in. Please log in first.');
+            setLoading(false);
+            return;
+        }
 
         axios.post('http://localhost:8082/api/buckets', newBucket)
             .then(response => {
+                const bucketId = response.data.bucketId;
+                sessionStorage.setItem('bucketId', bucketId);
+                localStorage.setItem('bucketId', bucketId)
                 console.log('Bucket created:', response.data);
                 alert("Bucket created successfully!");
+                window.location.href = "/create_card";
+                console.log(sessionStorage, 'hiiii')
             })
             .catch(error => {
                 console.error('There was an error creating the bucket!', error);

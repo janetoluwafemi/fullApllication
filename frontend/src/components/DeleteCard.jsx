@@ -8,6 +8,8 @@ function DeleteCard() {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
+    console.log(localStorage.getItem('cardId'), 'hiiii')
+
     const handleDelete = async (e) => {
         e.preventDefault();
 
@@ -18,6 +20,7 @@ function DeleteCard() {
         setLoading(true);
         setError('');
         setMessage('');
+        setCardId(localStorage.getItem('cardId'));
 
         try {
             const response = await axios.delete(`http://localhost:8082/api/cards/${cardId}`);

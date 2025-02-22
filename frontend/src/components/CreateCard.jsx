@@ -6,19 +6,36 @@ function CreateCard() {
     const [name, setName] = useState('');
     const [link, setLink] = useState('');
     const [bucketId, setBucketId] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
+    console.log(localStorage.getItem('bucketId'), 'hiiii')
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!name) {
+            alert("Please enter a card name.");
+            return;
+        }
 
+        setLoading(true);
+        setError('');
+
+        // setBucketId(sessionStorage.getItem('bucketId'));
+        setBucketId(localStorage.getItem('bucketId'));
         const cardData = {
             name: name,
             link: link,
             bucketId: bucketId,
         };
 
+
         try {
-            const response = await axios.post('http://localhost:8081/api/cards', cardData);
+            const response = await axios.post('http://localhost:8082/api/cards', cardData);
+            const cardId = response.data.bucketId;
+            sessionStorage.setItem('cardId', cardId);
+            localStorage.setItem('cardId', cardId)
             console.log('Card created successfully:', response.data);
+            console.log(sessionStorage, 'hiiii')
         } catch (error) {
             console.error('Error creating card:', error);
         }
@@ -52,17 +69,17 @@ function CreateCard() {
                     />
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="bucketId">Select Bucket:</label>
-                    <input
-                        type="text"
-                        id="bucketId"
-                        value={bucketId}
-                        onChange={(e) => setBucketId(e.target.value)}
-                        placeholder="Enter bucket ID"
-                        required
-                    />
-                </div>
+                {/*<div className="form-group">*/}
+                {/*    <label htmlFor="bucketId">Select Bucket:</label>*/}
+                {/*    <input*/}
+                {/*        type="text"*/}
+                {/*        id="bucketId"*/}
+                {/*        value={bucketId}*/}
+                {/*        onChange={(e) => setBucketId(e.target.value)}*/}
+                {/*        placeholder="Enter bucket ID"*/}
+                {/*        required*/}
+                {/*    />*/}
+                {/*</div>*/}
 
                 <button type="submit">Create Card</button>
             </form>

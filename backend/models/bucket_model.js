@@ -15,7 +15,6 @@ const bucketSchema = new Schema({
         required: true
     },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    id: { type: String, unique: true },
     createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 

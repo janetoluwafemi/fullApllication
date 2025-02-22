@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function UpdateCard({ cardId, onUpdate }) {
+function UpdateCard({ onUpdate }) {
     const [cardData, setCardData] = useState({ name: '', type: '', link: '', bucketId: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [cardId, setCardId] = useState('');
+
+    console.log(localStorage.getItem('cardId'), 'hiiii')
 
     useEffect(() => {
         if (cardId) {
@@ -31,13 +34,20 @@ function UpdateCard({ cardId, onUpdate }) {
         setError('');
         setMessage('');
 
+        setCardId(localStorage.getItem('cardId'));
+
+
         try {
             const response = await axios.put(`http://localhost:8082/api/cards/${cardId}`, cardData);
-            setMessage(response.data.message);  // Show success message
-            onUpdate();  // Call the onUpdate callback to refresh the parent component
+            setMessage(response.data.message);
+            sessionStorage.setItem('cardId', cardId);
+            localStorage.setItem('cardId', cardId)
+            console.log('Card updated successfully:', response.data);
+            console.log(sessionStorage, 'hiiii')
+            onUpdate();
         } catch (error) {
             console.error('There was an error updating the card!', error);
-            setError('Failed to update the card. Please try again.');  // Show error message
+            setError('Failed to update the card. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -50,30 +60,30 @@ function UpdateCard({ cardId, onUpdate }) {
             {message && <div className="success-message">{message}</div>}
 
             <form onSubmit={handleSubmit}>
-               <div className="form-group">
+                <div className="form-group">
                     <label htmlFor="name">Card Name:</label>
                     <input
                         type="text"
                         id="name"
                         value={cardData.name}
-                        onChange={(e) => setCardData({ ...cardData, name: e.target.value })}
+                        onChange={(e) => setCardData(prevData => ({ ...prevData, name: e.target.value }))}
                         placeholder="Enter card name"
                     />
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="type">Bucket Type:</label>
-                    <select
-                        id="type"
-                        value={cardData.type}
-                        onChange={(e) => setCardData({ ...cardData, type: e.target.value })}
-                    >
-                        <option value="entertainmentVideos">Entertainment Videos</option>
-                        <option value="educationVideos">Education Videos</option>
-                        <option value="liveVideos">Live Videos</option>
-                        <option value="promotionVideos">Promotional Videos</option>
-                    </select>
-                </div>
+                {/*<div className="form-group">*/}
+                {/*    <label htmlFor="type">Bucket Type:</label>*/}
+                {/*    <select*/}
+                {/*        id="type"*/}
+                {/*        value={cardData.type}*/}
+                {/*        onChange={(e) => setCardData(prevData => ({ ...prevData, type: e.target.value }))}*/}
+                {/*    >*/}
+                {/*        <option value="entertainmentVideos">Entertainment Videos</option>*/}
+                {/*        <option value="educationVideos">Education Videos</option>*/}
+                {/*        <option value="liveVideos">Live Videos</option>*/}
+                {/*        <option value="promotionVideos">Promotional Videos</option>*/}
+                {/*    </select>*/}
+                {/*</div>*/}
 
                 <div className="form-group">
                     <label htmlFor="link">Card Link:</label>
@@ -81,21 +91,21 @@ function UpdateCard({ cardId, onUpdate }) {
                         type="text"
                         id="link"
                         value={cardData.link}
-                        onChange={(e) => setCardData({ ...cardData, link: e.target.value })}
+                        onChange={(e) => setCardData(prevData => ({ ...prevData, link: e.target.value }))}
                         placeholder="Enter card link"
                     />
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="bucketId">Bucket ID:</label>
-                    <input
-                        type="text"
-                        id="bucketId"
-                        value={cardData.bucketId}
-                        onChange={(e) => setCardData({ ...cardData, bucketId: e.target.value })}
-                        placeholder="Enter bucket ID"
-                    />
-                </div>
+                {/*<div className="form-group">*/}
+                {/*    <label htmlFor="bucketId">Bucket ID:</label>*/}
+                {/*    <input*/}
+                {/*        type="text"*/}
+                {/*        id="bucketId"*/}
+                {/*        value={cardData.bucketId}*/}
+                {/*        onChange={(e) => setCardData(prevData => ({ ...prevData, bucketId: e.target.value }))}*/}
+                {/*        placeholder="Enter bucket ID"*/}
+                {/*    />*/}
+                {/*</div>*/}
 
                 <button type="submit" disabled={loading}>
                     {loading ? 'Updating...' : 'Update Card'}

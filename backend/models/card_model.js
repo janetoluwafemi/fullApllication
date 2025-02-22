@@ -1,7 +1,6 @@
 import mongoose, {Schema} from 'mongoose';
 
 const cardSchema = new Schema({
-    id: { type: String, unique: true },
     name: { type: String, required: true },
     link: { type: String, required: true },
     bucketId: { type: Schema.Types.ObjectId, ref: 'Bucket', required: true }  // Reference to the Bucket model

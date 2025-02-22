@@ -6,16 +6,10 @@ const { Types } = mongoose;  // Import mongoose
 
 class CardService {
 
-    async addCard(cardData) {
+    async addCard(bucketId, cardData) {
         try {
-            const newBucket = new Bucket({
-                name: 'Entertainment Bucket',
-                type: 'entertainmentVideos',
-                id: '67b478439b188ad2a4f05c41'
-            });
-            const savedBucket = await newBucket.save();
-            console.log('Bucket created:', savedBucket);
-            const card = new Card(cardData);
+            const card =
+                new Card({name: cardData.name, link: cardData.link, bucketId: new Types.ObjectId(bucketId)});
             const savedCard = await card.save();
             console.log('Card created:', savedCard);
             return savedCard._id;
@@ -23,39 +17,40 @@ class CardService {
             console.error('Error creating card:', error);
         }
     }
-    async updateCard(data) {
-        const cardId = new mongoose.Types.ObjectId(data._id);
+    async updateCard(cardId, data) {
+        // const cardId = new mongoose.Types.ObjectId(data._id);
         const card = await Card.findById(cardId);
-        if (!card) {
+        const updatedCard =
+            new Card({name: data.name, link: data.link, bucketId: new Types.ObjectId(bucketId)});
+        if (card != null) {
             return new Error('Card not found');
         }
-        if (data.name) {
+        if (data.name != null) {
             card.name = data.name;
         }
-        if (data.link) {
+        if (data.link != null) {
             card.link = data.link;
         }
-        if (data.bucketId) {
-            console.log(`Looking for bucket with ID: ${data.bucketId}`);
-            const bucket = await Bucket.findById(data.bucketId);
-            if (!bucket) {
-                console.error(`Bucket with ID: ${data.bucketId} not found`);
-                throw new Error('Bucket not found');
-            }
-            console.log(`Found bucket: ${bucket.name}`);
-            card.bucketId = bucket._id;
-        }
-        const updatedCard = await card.save();
-        console.log('Card updated:', updatedCard);
-        return updatedCard;
+        const savedCard = await updatedCard.save();
+        console.log('Card updated:', savedCard);
+        return savedCard;
     }
 
     async deleteCard(id) {
-        const deletedCard = await Card.findByIdAndDelete(id);
+
+        const deletedCard = await Card.deleteOne(id)
         if (!deletedCard) {
             throw new Error('Card not found');
         }
         console.log(`Deleted card with id: ${id}`);
+    }
+
+    async getAllCardsByBucket(bucketId) {
+        return Bucket.find({ bucketId });
+    }
+
+    async getCardById(id) {
+        return Bucket.findOne({ id });
     }
 }
 

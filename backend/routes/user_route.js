@@ -85,7 +85,6 @@ async function checkUserExists(req, res, next) {
         return res.status(404).json({ message: 'User not found', error: error.message });
     }
 }
-
 router.post('/users', async (req, res) => {
     try {
         const { firstName, lastName, phoneNumber, email, password } = req.body;
@@ -94,8 +93,11 @@ router.post('/users', async (req, res) => {
             return res.status(400).json({ message: "All fields are required." });
         }
 
+        const userService = new UserService();
         const userId = await userService.createUser(req.body);
-        return res.status(201).json({ message: "User created successfully", userId });
+        console.log("Returned User ID (String):", userId); // This should log a string
+
+        return res.status(201).json({ message: "User created successfully", userId: userId });
     } catch (error) {
         if (error.message === 'Email or Phone Number already in use.') {
             return res.status(400).json({ message: 'Email or Phone Number already in use.' });
@@ -106,13 +108,14 @@ router.post('/users', async (req, res) => {
 });
 
 
+
 router.post('/buckets', checkUserExists, async (req, res) => {
     try {
         const { name, type, userId } = req.body;
         if (!name || !type || !userId) {
             return res.status(400).json({ message: "All fields are required." });
         }
-        const bucketId = await userService.createBucket({ name, type });
+        const bucketId = await userService.createBucket(userId,{ name, type });
         return res.status(201).json({ message: "Bucket created successfully", bucketId });
     } catch (error) {
         console.error("Error creating bucket:", error);
@@ -120,19 +123,51 @@ router.post('/buckets', checkUserExists, async (req, res) => {
     }
 });
 
-router.post('/cards', checkUserExists, async (req, res) => {
+router.post('/cards', async (req, res) => {
     try {
-        const { name, link, bucketId, userId } = req.body;
+        const { name, link, bucketId } = req.body;
 
-        if (!name || !link || !bucketId || !userId) {
+        if (!name || !link || !bucketId) {
             return res.status(400).json({ message: "All fields are required." });
         }
 
-        const cardId = await userService.createACard(userId, req.body);
+        const cardId = await userService.createACard(bucketId, req.body);
         return res.status(201).json({ message: "Card created successfully", cardId });
     } catch (error) {
         console.error("Error creating card:", error);
         return res.status(500).json({ message: "Error creating card", error: error.message });
+    }
+});
+router.post('/delete', async (req, res) => {
+    try {
+        const { cardId } = req.body;
+
+        if (!cardId) {
+            return res.status(400).json({ message: "All fields are required." });
+        }
+
+        const deletedCard = await userService.deleteCard(cardId);
+
+        return res.status(201).json({ message: "Card deleted successfully", deletedCard });
+    } catch (error) {
+        console.error("Error creating card:", error);
+        return res.status(500).json({ message: "Error deleting card", error: error.message });
+    }
+});
+router.put('/update', async (req, res) => {
+    try {
+        const { cardId, name, link } = req.body;
+
+        if (!cardId || !name || !link ) {
+            return res.status(400).json({ message: "All fields are required." });
+        }
+        const updatedCard = await userService.updateCard(cardId, req.body)
+
+        return res.status(201).json({ message: "Card updated successfully", updatedCard });
+    } catch (error) {
+
+        console.error("Error creating card:", error);
+        return res.status(500).json({ message: "Error updating card", error: error.message });
     }
 });
 
