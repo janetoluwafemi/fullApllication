@@ -20,7 +20,6 @@ function CreateCard() {
         setLoading(true);
         setError('');
 
-        // setBucketId(sessionStorage.getItem('bucketId'));
         setBucketId(localStorage.getItem('bucketId'));
         const cardData = {
             name: name,

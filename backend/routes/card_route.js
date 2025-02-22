@@ -37,21 +37,41 @@ router.delete('/delete', async (req, res) => {
         return res.status(500).json({ message: "Error deleting card", error: error.message });
     }
 });
-router.put('/update', async (req, res) => {
+router.put('/update/:cardId', async (req, res) => {
     try {
-        const { cardId, name, link } = req.body;
+        const { cardId } = req.params;
+        const { name, link } = req.body;
 
-        if (!cardId || !name || !link ) {
-            return res.status(400).json({ message: "All fields are required." });
+        if (!name || !link) {
+            return res.status(400).json({ message: "Name and Link are required." });
         }
+
         const cardService = new CardService();
-        const data = await cardService.updateCard(req.body);
+        const updatedCard = await cardService.updateCard(cardId, { name, link });
 
-        return res.status(201).json({ message: "Card updated successfully", data });
+        return res.status(200).json({ message: "Card updated successfully", data: updatedCard });
     } catch (error) {
-
-        console.error("Error creating card:", error);
+        console.error("Error updating card:", error);
         return res.status(500).json({ message: "Error updating card", error: error.message });
     }
 });
+router.get('/card/:name', async (req, res) => {
+    try {
+        const { name } = req.params;
+        if (!name) {
+            return res.status(400).json({ message: "Name is required." });
+        }
+        const cardService = new CardService();
+        const cardId = await cardService.getCardByName(name);
+
+        if (cardId instanceof Error) {
+            return res.status(404).json({ message: cardId.message });
+        }
+        return res.status(200).json({ cardId });
+    } catch (error) {
+        console.error('Error in getCardByName route:', error);
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
+
 export default router;

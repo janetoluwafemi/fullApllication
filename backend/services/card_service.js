@@ -19,18 +19,18 @@ class CardService {
     }
     async updateCard(cardId, data) {
         // const cardId = new mongoose.Types.ObjectId(data._id);
-        const card = await Card.findById(cardId);
+        // const card = await Card.findById(cardId);
         const updatedCard =
-            new Card({name: data.name, link: data.link, bucketId: new Types.ObjectId(bucketId)});
-        if (card != null) {
-            return new Error('Card not found');
-        }
-        if (data.name != null) {
-            card.name = data.name;
-        }
-        if (data.link != null) {
-            card.link = data.link;
-        }
+            new Card({name: data.name, link: data.link, bucketId: new Types.ObjectId(cardId)});
+        // if (card != null) {
+        //     return new Error('Card not found');
+        // }
+        // if (data.name != null) {
+        //     card.name = data.name;
+        // }
+        // if (data.link != null) {
+        //     card.link = data.link;
+        // }
         const savedCard = await updatedCard.save();
         console.log('Card updated:', savedCard);
         return savedCard;
@@ -49,8 +49,17 @@ class CardService {
         return Bucket.find({ bucketId });
     }
 
-    async getCardById(id) {
-        return Bucket.findOne({ id });
+    async getCardByName(name) {
+        try {
+            const card = await Card.findOne({ name: name });
+            if (!card) {
+                return  new Error('Card not found');
+            }
+            return card._id.toString();
+        } catch (error) {
+            console.error('Error finding card:', error);
+            throw new Error('Error finding card');
+        }
     }
 }
 

@@ -215,6 +215,9 @@ class UserService {
             throw new Error(error.message);
         }
     }
+    async getCardByName(name){
+        const cardService = new CardService();
+        return await cardService.getCardByName(name);    }
 }
 
 export default UserService;

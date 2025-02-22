@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function UpdateCard({ onUpdate }) {
-    const [cardData, setCardData] = useState({ name: '', type: '', link: '', bucketId: '' });
+    const [cardData, setCardData] = useState({ name: '', cardId: '', link: '' });
+    const [cardId, setCardId] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
-    const [cardId, setCardId] = useState('');
 
     console.log(localStorage.getItem('cardId'), 'hiiii')
 
     useEffect(() => {
+        const cardId = localStorage.getItem('cardId');
+
         if (cardId) {
-            axios.get(`http://localhost:8082/api/cards/${cardId}`)
+            axios.get(`http://localhost:8082/api/update/${cardId}`)
                 .then(response => {
                     setCardData(response.data);
                 })
@@ -25,25 +27,23 @@ function UpdateCard({ onUpdate }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!cardData.name || !cardData.type || !cardData.link || !cardData.bucketId) {
-            alert("Please fill in all fields.");
-            return;
-        }
-
         setLoading(true);
         setError('');
         setMessage('');
 
-        setCardId(localStorage.getItem('cardId'));
 
+        if (!cardId) {
+            setError("Card ID is missing.");
+            setLoading(false);
+            return;
+        }
 
         try {
-            const response = await axios.put(`http://localhost:8082/api/cards/${cardId}`, cardData);
+            const response = await axios.put(`http://localhost:8082/api/update/${cardId}`, cardData);
             setMessage(response.data.message);
-            sessionStorage.setItem('cardId', cardId);
-            localStorage.setItem('cardId', cardId)
             console.log('Card updated successfully:', response.data);
-            console.log(sessionStorage, 'hiiii')
+            sessionStorage.setItem('cardId', cardId);
+            localStorage.setItem('cardId', cardId);
             onUpdate();
         } catch (error) {
             console.error('There was an error updating the card!', error);
