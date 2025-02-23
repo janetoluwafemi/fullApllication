@@ -10,6 +10,7 @@ function GetCardByName() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Form submitted with name:', name);
 
         if (!name) {
             alert("Please enter a card name.");
@@ -22,16 +23,23 @@ function GetCardByName() {
         setCardId('');
 
         try {
-            const response = await axios.get(`http://localhost:8082/card/${name}`);
+            const url = `http://localhost:8082/api/card/${name}`;
+            console.log('Making API request to:', url);
+
+            const response = await axios.get(url);
+            console.log('API Response:', response);
 
             if (response.data && response.data.cardId) {
-                setCardId(response.data.cardId); // Save card ID from the response
+                setCardId(response.data.cardId);
                 setMessage(`Card ID found: ${response.data.cardId}`);
+
+                localStorage.setItem('cardId', response.data.cardId);
                 console.log('Card found successfully:', response.data);
+                window.location.href = "/delete_card";
+                console.log(sessionStorage, 'hiiii')
             } else {
                 setError('Card not found.');
             }
-
         } catch (error) {
             console.error('There was an error finding the card!', error);
             setError(`Failed to find the card. ${error.message || 'Please try again.'}`);
@@ -39,6 +47,7 @@ function GetCardByName() {
             setLoading(false);
         }
     };
+
 
     return (
         <div>

@@ -176,18 +176,8 @@ class UserService {
         }
     }
     async deleteCard(cardId){
-        try {
-            const card = await Card.findById(cardId);
-            if (!card) {
-                return new Error('card not found');
-            }
-            await card.save();
-            const cardService = new CardService();
-            return await cardService.deleteCard(cardId);
-        }
-        catch (error){
-            throw new Error(error.message);
-        }
+        const cardService = new CardService();
+        return await cardService.deleteCard(cardId);
     }
     async createBucket(userId, bucketDetails) {
         try {

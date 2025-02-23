@@ -3,34 +3,27 @@ import axios from 'axios';
 
 function UpdateCard({ onUpdate }) {
     const [cardData, setCardData] = useState({ name: '', cardId: '', link: '' });
-    const [cardId, setCardId] = useState('');
+    const [cardId, setCardId] = useState('');  // Keep the state for cardId
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
 
-    console.log(localStorage.getItem('cardId'), 'hiiii')
-
     useEffect(() => {
-        const cardId = localStorage.getItem('cardId');
-
-        if (cardId) {
-            axios.get(`http://localhost:8082/api/update/${cardId}`)
-                .then(response => {
-                    setCardData(response.data);
-                })
-                .catch(err => {
-                    console.error("Error fetching card:", err);
-                    setError('Failed to load card data');
-                });
+        // Try to load cardId from localStorage when the component mounts
+        const storedCardId = localStorage.getItem('cardId');
+        if (storedCardId) {
+            setCardId(storedCardId); // Set cardId if it exists
+        } else {
+            setError("Card ID is missing.");
         }
-    }, [cardId]);
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         setLoading(true);
         setError('');
         setMessage('');
-
 
         if (!cardId) {
             setError("Card ID is missing.");
@@ -38,13 +31,18 @@ function UpdateCard({ onUpdate }) {
             return;
         }
 
+        const updatedCard = { name: cardData.name, link: cardData.link };
+
         try {
-            const response = await axios.put(`http://localhost:8082/api/update/${cardId}`, cardData);
+            // Make the PUT request with the correct URL and request body
+            const response = await axios.put(`http://localhost:8082/api/update/${cardId}`, updatedCard);
+
             setMessage(response.data.message);
+            sessionStorage.setItem('cardId', cardId); // Storing cardId in sessionStorage
+            localStorage.setItem('cardId', cardId); // Storing cardId in localStorage
             console.log('Card updated successfully:', response.data);
-            sessionStorage.setItem('cardId', cardId);
-            localStorage.setItem('cardId', cardId);
-            onUpdate();
+            onUpdate(); // Assuming this function is passed down as a prop to update the parent component
+
         } catch (error) {
             console.error('There was an error updating the card!', error);
             setError('Failed to update the card. Please try again.');
@@ -71,19 +69,6 @@ function UpdateCard({ onUpdate }) {
                     />
                 </div>
 
-                {/*<div className="form-group">*/}
-                {/*    <label htmlFor="type">Bucket Type:</label>*/}
-                {/*    <select*/}
-                {/*        id="type"*/}
-                {/*        value={cardData.type}*/}
-                {/*        onChange={(e) => setCardData(prevData => ({ ...prevData, type: e.target.value }))}*/}
-                {/*    >*/}
-                {/*        <option value="entertainmentVideos">Entertainment Videos</option>*/}
-                {/*        <option value="educationVideos">Education Videos</option>*/}
-                {/*        <option value="liveVideos">Live Videos</option>*/}
-                {/*        <option value="promotionVideos">Promotional Videos</option>*/}
-                {/*    </select>*/}
-                {/*</div>*/}
 
                 <div className="form-group">
                     <label htmlFor="link">Card Link:</label>
@@ -95,17 +80,6 @@ function UpdateCard({ onUpdate }) {
                         placeholder="Enter card link"
                     />
                 </div>
-
-                {/*<div className="form-group">*/}
-                {/*    <label htmlFor="bucketId">Bucket ID:</label>*/}
-                {/*    <input*/}
-                {/*        type="text"*/}
-                {/*        id="bucketId"*/}
-                {/*        value={cardData.bucketId}*/}
-                {/*        onChange={(e) => setCardData(prevData => ({ ...prevData, bucketId: e.target.value }))}*/}
-                {/*        placeholder="Enter bucket ID"*/}
-                {/*    />*/}
-                {/*</div>*/}
 
                 <button type="submit" disabled={loading}>
                     {loading ? 'Updating...' : 'Update Card'}

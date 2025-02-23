@@ -19,31 +19,35 @@ class CardService {
     }
     async updateCard(cardId, data) {
         // const cardId = new mongoose.Types.ObjectId(data._id);
-        // const card = await Card.findById(cardId);
+        const card = await Card.findById(cardId);
         const updatedCard =
-            new Card({name: data.name, link: data.link, bucketId: new Types.ObjectId(cardId)});
-        // if (card != null) {
-        //     return new Error('Card not found');
-        // }
-        // if (data.name != null) {
-        //     card.name = data.name;
-        // }
-        // if (data.link != null) {
-        //     card.link = data.link;
-        // }
+            new Card({name: data.name, link: data.link, cardId: new Types.ObjectId(cardId)});
+        if (card != null) {
+            return new Error('Card not found');
+        }
+        if (data.name != null) {
+            card.name = data.name;
+        }
+        if (data.link != null) {
+            card.link = data.link;
+        }
         const savedCard = await updatedCard.save();
         console.log('Card updated:', savedCard);
         return savedCard;
     }
-
-    async deleteCard(id) {
-
-        const deletedCard = await Card.deleteOne(id)
-        if (!deletedCard) {
-            throw new Error('Card not found');
+    async deleteCard(cardId) {
+        try {
+            const card = await Card.findById(cardId);
+            if (!card) {
+                return new Error('Card not found');
+            }
+            await Card.findByIdAndDelete(new Types.ObjectId(cardId));
+            return card;
+        } catch (error) {
+            throw new Error(error.message);
         }
-        console.log(`Deleted card with id: ${id}`);
     }
+
 
     async getAllCardsByBucket(bucketId) {
         return Bucket.find({ bucketId });
