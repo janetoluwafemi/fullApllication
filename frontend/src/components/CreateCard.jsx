@@ -68,18 +68,6 @@ function CreateCard() {
                     />
                 </div>
 
-                {/*<div className="form-group">*/}
-                {/*    <label htmlFor="bucketId">Select Bucket:</label>*/}
-                {/*    <input*/}
-                {/*        type="text"*/}
-                {/*        id="bucketId"*/}
-                {/*        value={bucketId}*/}
-                {/*        onChange={(e) => setBucketId(e.target.value)}*/}
-                {/*        placeholder="Enter bucket ID"*/}
-                {/*        required*/}
-                {/*    />*/}
-                {/*</div>*/}
-
                 <button type="submit">Create Card</button>
             </form>
         </div>

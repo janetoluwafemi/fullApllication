@@ -3,6 +3,7 @@ import axios from 'axios';
 
 function GetCardByName() {
     const [name, setName] = useState('');
+    const [cardId, setCardId] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -14,22 +15,26 @@ function GetCardByName() {
             alert("Please enter a card name.");
             return;
         }
+
         setLoading(true);
         setError('');
         setMessage('');
+        setCardId('');
 
         try {
             const response = await axios.get(`http://localhost:8082/card/${name}`);
 
-            // Successful API call
-            setMessage(`Card ID found: ${response.data.cardId}`);
-            const cardId = response.data.cardId;
-            sessionStorage.setItem('cardId', cardId);
-            localStorage.setItem('cardId', cardId);
-            console.log('Card found successfully:', response.data);
+            if (response.data && response.data.cardId) {
+                setCardId(response.data.cardId); // Save card ID from the response
+                setMessage(`Card ID found: ${response.data.cardId}`);
+                console.log('Card found successfully:', response.data);
+            } else {
+                setError('Card not found.');
+            }
+
         } catch (error) {
             console.error('There was an error finding the card!', error);
-            setError('Failed to find the card. Please try again.');
+            setError(`Failed to find the card. ${error.message || 'Please try again.'}`);
         } finally {
             setLoading(false);
         }
