@@ -22,7 +22,6 @@ class BucketService {
             }
             console.log('Bucket created:', savedBucket);
             return savedBucket._id;
-            // return await Bucket.find();
         } catch (error) {
             console.error('Error creating bucket:', error);
             throw error;

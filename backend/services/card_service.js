@@ -17,8 +17,8 @@ class CardService {
             console.error('Error creating card:', error);
         }
     }
+
     async updateCard(cardId, data) {
-        // const cardId = new mongoose.Types.ObjectId(data._id);
         const card = await Card.findById(cardId);
         const updatedCard =
             new Card({name: data.name, link: data.link, cardId: new Types.ObjectId(cardId)});
@@ -35,6 +35,7 @@ class CardService {
         console.log('Card updated:', savedCard);
         return savedCard;
     }
+
     async deleteCard(cardId) {
         try {
             const card = await Card.findById(cardId);

@@ -1,5 +1,6 @@
 import express from 'express';
 import CardService from "../services/card_service.js";
+import mongoose from "mongoose";
 const router = express.Router();
 
 router.post('/cards', async (req, res) => {
@@ -43,8 +44,6 @@ router.delete('/cards/:cardId', async (req, res) => {
         return res.status(500).json({ message: "Error deleting card", error: error.message });
     }
 });
-
-
 
 router.put('/update/:cardId', async (req, res) => {
     try {
